@@ -6,6 +6,7 @@ import re, sys, time
 from itertools import count
 from collections import OrderedDict, namedtuple
 
+from dynamicprint import multiPrinter
 # The table size is the maximum number of elements in the transposition table.
 TABLE_SIZE = 1e8
 
@@ -412,21 +413,31 @@ def render(i):
 
 def print_pos(pos):
     print()
+#    printer.addEmptyLine()
     uni_pieces = {'R':'♜', 'N':'♞', 'B':'♝', 'Q':'♛', 'K':'♚', 'P':'♟',
                   'r':'♖', 'n':'♘', 'b':'♗', 'q':'♕', 'k':'♔', 'p':'♙', '.':'·'}
     for i, row in enumerate(pos.board.split()):
         print(' ', 8-i, ' '.join(uni_pieces.get(p, p) for p in row))
-    print('    a b c d e f g h \n\n')
+#        printer.addLine(' ', 8-i, ' '.join(uni_pieces.get(p, p) for p in row))
+    printer.addLine('    a b c d e f g h \n\n')
 
 
 def main():
     pos = Position(initial, 0, (True,True), (True,True), 0, 0)
     searcher = Searcher()
+    a =0
     while True:
+        if a==1:
+#            printer.moveup(10)
+            pass
         print_pos(pos)
+        printer.moveup(10)
+        a=1
+#        if b ==1:
 
         if pos.score <= -MATE_LOWER:
             print("You lost")
+#            printer.addLine("You lost")
             break
 
         # We query the user until she enters a (pseudo) legal move.
@@ -438,6 +449,7 @@ def main():
             else:
                 # Inform the user when invalid input (e.g. "help") is entered
                 print("Please enter a move like g8f6")
+#                printer.addLine("Please enter a move like g8f6")
         pos = pos.move(move)
 
         # After our move we rotate the board and print it again.
@@ -445,6 +457,7 @@ def main():
         print_pos(pos.rotate())
 
         if pos.score <= -MATE_LOWER:
+#                printer.addLineprint("You won")
             print("You won")
             break
 
@@ -453,13 +466,18 @@ def main():
 
         if score == MATE_UPPER:
             print("Checkmate!")
+#            printer.addLine("Checkmate!")
 
         # The black player moves from a rotated position, so we have to
         # 'back rotate' the move before printing it.
         print("My move:", render(119-move[0]) + render(119-move[1]))
+#        printer.addLine("My move:", render(119-move[0]) + render(119-move[1]))
         pos = pos.move(move)
-
+        printer.moveup(10)
+#        printer.update()
 
 if __name__ == '__main__':
+    printer = multiPrinter()
+    print()
     main()
 
